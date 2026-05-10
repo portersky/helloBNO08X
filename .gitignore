@@ -1,0 +1,71 @@
+# Build output
+*.local
+build
+node_modules
+
+# Toolings
+.tools
+.cache
+
+# Logs
+log.txt
+
+# Images/PDFs
+*.pdf
+misc/*.png
+
+# Environments
+.venv
+
+# Editor directories and files
+!.vscode/extensions.json
+*.njsproj
+*.ntvs*
+*.sln
+*.suo
+*.sw?
+.idea
+.vscode/*
+
+# Visual Studio
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+.vs
+
+# Makefile
+Makefile
+*.make
+
+# nvim
+.ccls
+.ccls-cache
+compile_commands.json
+
+# Visual Studio Code
+.vscode
+
+# IntelliJ
+.idea
+
+# macOS
+.AppleDouble
+.DS_Store
+.LSOverride
+
+# Logs
+*.log
+lerna-debug.log*
+logs
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Xcode
+*.xcworkspace
+*.xcodeproj
+
+
+.zed

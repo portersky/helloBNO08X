@@ -1,0 +1,5 @@
+:cmock:
+  :plugins:
+    - :ignore
+    - :ignore_arg
+    - :return_thru_ptr
