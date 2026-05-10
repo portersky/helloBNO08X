@@ -52,6 +52,18 @@ BNO08X ready  sw=4.3.0  reset_cause=1
 On Windows the VCP appears as a `COMx` port in Device Manager. On Linux
 it is `/dev/ttyACM0` or `/dev/ttyUSB0`.
 
+List available serial ports:
+
+```sh
+uv run --with pyserial python -m serial.tools.list_ports
+```
+
+Open the terminal (replace `COM13` with your port):
+
+```sh
+uv run --with pyserial python -m serial.tools.miniterm COM13 115200
+```
+
 > **Note**: The I2C timing constant in `src/i2c_bus.c` is calibrated for
 > the default 4 MHz MSI clock (`RCC_MSIRANGE_4`). Recalculate with
 > STM32CubeMX if you change the clock tree.
@@ -86,11 +98,13 @@ helloBNO08X/
 Requires: CMake ≥ 3.25, a C compiler, Ruby (for CMock code generation).
 
 Configure:
+
 ```sh
 cmake -S . -Bbuild/test -GNinja
 ```
 
 Run tests:
+
 ```sh
 ninja -C build/test check
 ```
@@ -111,16 +125,19 @@ configure. Requires: CMake ≥ 3.25, Ninja, OpenOCD (bundled via
 FetchContent).
 
 Configure:
+
 ```sh
 cmake -S . -Bbuild -GNinja -DCMAKE_TOOLCHAIN_FILE="cmake/arm-none-eabi-toolchain.cmake" -DCMAKE_BUILD_TYPE=Debug
 ```
 
 Build:
+
 ```sh
 ninja -C build
 ```
 
 Flash:
+
 ```sh
 ninja -C build flash
 ```
@@ -132,24 +149,54 @@ path to the build directory.
 ## Debugging
 
 Start the OpenOCD GDB server (leave this terminal open):
+
 ```sh
 ninja -C build debug
 ```
 
 In a second terminal, connect GDB:
+
 ```sh
 ninja -C build gdb
 ```
 
 ### Zed
 
-Create `.zed/settings.json`:
+Zed's built-in debugger connects to OpenOCD via GDB. Requires a GDB
+build with DAP support (GDB 14+) and multi-architecture support. Install
+`gdb-multiarch` for your platform.
+
+Windows (MSYS2 UCRT64):
+
+```sh
+pacman -S mingw-w64-ucrt-x86_64-gdb-multiarch
+```
+
+Linux:
+
+```sh
+sudo apt install gdb-multiarch
+```
+
+macOS:
+
+```sh
+brew install gdb
+```
+
+| Platform | Binary path                              |
+| -------- | ---------------------------------------- |
+| Windows  | `C:/msys64/ucrt64/bin/gdb-multiarch.exe` |
+| Linux    | `/usr/bin/gdb-multiarch`                 |
+| macOS    | `/opt/homebrew/bin/gdb`                  |
+
+Create `.zed/settings.json` with the path for your platform:
 
 ```json
 {
   "dap": {
     "GDB": {
-      "binary": ".tools/arm-gnu-toolchain-15.2.rel1-mingw-w64-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb"
+      "binary": "<path from table above>"
     }
   }
 }
@@ -177,6 +224,7 @@ Create `.zed/debug.json`:
 ```
 
 Start OpenOCD first, then launch from the Zed debug panel:
+
 ```sh
 ninja -C build debug
 ```
