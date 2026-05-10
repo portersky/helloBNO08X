@@ -49,7 +49,23 @@ int main(void) {
         printf("BNO08X: product ID read failed\r\n");
     }
 
-    while (1) { }
+    if (bno08x_enable_rotation_vector(100000u) != BNO08X_OK) {
+        printf("BNO08X: enable rotation vector failed\r\n");
+        Error_Handler();
+    }
+
+    printf("entering loop\r\n");
+    while (1) {
+        HAL_Delay(100);
+        bno08x_rotation_vector_t rv;
+        if (bno08x_read_rotation_vector(&rv) != BNO08X_OK) {
+            printf("rv read fail\r\n");
+            continue;
+        }
+        printf("i=%.4f j=%.4f k=%.4f real=%.4f acc=%u\r\n",
+               (double)rv.i, (double)rv.j, (double)rv.k, (double)rv.real,
+               (unsigned)rv.accuracy);
+    }
 }
 
 void SystemClock_Config(void) {

@@ -50,6 +50,7 @@ if (CMAKE_CROSSCOMPILING)
   target_link_options(fw PRIVATE
         -T${_LINKER_SCRIPT}
         -Wl,-Map=${CMAKE_BINARY_DIR}/output.map
+        -u _printf_float
     )
   set_target_properties(fw PROPERTIES
         OUTPUT_NAME   firmware
