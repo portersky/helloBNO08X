@@ -17,7 +17,7 @@
 
 static uint8_t s_seq;
 
-static i2c_status_t shtp_write(uint8_t channel, const uint8_t *payload, uint8_t payload_len) {
+static i2c_status_t shtp_write(uint8_t channel, uint8_t const *payload, uint8_t payload_len) {
     uint8_t buf[64];
     uint16_t total = (uint16_t)(SHTP_HDR_LEN + payload_len);
     buf[0] = (uint8_t)(total & 0xFFu);

@@ -1,5 +1,6 @@
-#include "i2c_bus.h"
 #include "stm32u5xx_hal.h"
+
+#include "i2c_bus.h"
 
 static I2C_HandleTypeDef hi2c1;
 

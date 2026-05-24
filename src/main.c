@@ -1,8 +1,10 @@
-#include "stm32u5xx_hal.h"
-#include "uart_log.h"
-#include "i2c_bus.h"
-#include "bno08x.h"
 #include <stdio.h>
+
+#include "stm32u5xx_hal.h"
+
+#include "bno08x.h"
+#include "i2c_bus.h"
+#include "uart_log.h"
 
 void Error_Handler(void);
 void SystemClock_Config(void);
@@ -34,7 +36,7 @@ int main(void) {
                 printf("bno08x_init attempt %d failed\r\n", attempt);
         }
         if (s != BNO08X_OK) {
-            printf("BNO08X not responding — check wiring:\r\n"
+            printf("BNO08X not responding: check wiring:\r\n"
                    "  SCL=PB6/D15, SDA=PB7/D14\r\n"
                    "  SA0=GND, PS0=GND, PS1=GND, pull-ups on SCL+SDA\r\n");
             Error_Handler();

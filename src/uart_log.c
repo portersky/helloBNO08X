@@ -1,6 +1,8 @@
-#include "uart_log.h"
-#include "stm32u5xx_hal.h"
 #include <errno.h>
+
+#include "stm32u5xx_hal.h"
+
+#include "uart_log.h"
 
 static UART_HandleTypeDef huart1;
 

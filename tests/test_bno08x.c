@@ -1,6 +1,7 @@
 #include "unity.h"
-#include "src/bno08x.h"
 #include "Mocki2c_bus.h"
+
+#include "src/bno08x.h"
 
 void setUp(void)    { Mocki2c_bus_Init(); i2c_delay_ms_Ignore(); }
 void tearDown(void) { Mocki2c_bus_Verify(); Mocki2c_bus_Destroy(); }
@@ -9,7 +10,7 @@ void tearDown(void) { Mocki2c_bus_Verify(); Mocki2c_bus_Destroy(); }
 
 void test_init_ok_when_sensor_responds(void) {
     uint8_t hdr[4]   = { 10, 0, 0, 0 }; // pkt_len = 10
-    uint8_t empty[4] = {  0, 0, 0, 0 }; // pkt_len = 0 — buffer drained
+    uint8_t empty[4] = {  0, 0, 0, 0 }; // pkt_len = 0, buffer drained
     // Peek: non-empty packet
     i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_OK);
     i2c_read_IgnoreArg_buf();
