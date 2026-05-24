@@ -34,12 +34,17 @@ on the host with Unity + CMock, without any ARM toolchain.
 
 ## Build Targets
 
-| Command                                                          | Effect             |
-| ---------------------------------------------------------------- | ------------------ |
-| `cmake -B build/test && cmake --build build/test --target check` | Host unit tests    |
-| `ninja -C build`                                                 | Firmware binary    |
-| `ninja -C build flash`                                           | Flash via OpenOCD  |
-| `ninja -C build debug`                                           | OpenOCD GDB server |
+| Command                                                                  | Effect             |
+| ------------------------------------------------------------------------ | ------------------ |
+| `cmake -B build/test && cmake --build build/test --target check`         | Host unit tests    |
+| `cmake -B build/cov -DENABLE_COVERAGE=ON && ninja -C build/cov coverage` | Coverage report    |
+| `ninja -C build`                                                         | Firmware binary    |
+| `ninja -C build flash`                                                   | Flash via OpenOCD  |
+| `ninja -C build debug`                                                   | OpenOCD GDB server |
+
+On Windows, add `-G Ninja` to the coverage configure step. Ninja
+bypasses the Visual Studio generator and causes CMake to select Clang
+automatically if LLVM is installed — MSVC does not support `--coverage`.
 
 ## TDD Workflow
 
@@ -141,6 +146,7 @@ Rules marked **[C++ only]** apply only to `.cpp` and `.hpp` files.
 - `src/bno08x.c` depends only on `src/i2c_bus.h` — keep it that way.
 
 Include order for `.c`/`.h` files:
+
 1. C standard library headers (`<stdlib.h>`, `<string.h>`, etc.)
 2. _(blank line)_
 3. OS-specific headers (Windows API, POSIX, etc.)
@@ -150,6 +156,7 @@ Include order for `.c`/`.h` files:
 7. Local/project headers
 
 Include order for `.cpp`/`.hpp` files:
+
 1. C++ standard library headers (`<chrono>`, `<vector>`, etc.)
 2. _(blank line)_
 3. C standard library headers (`<stdlib.h>`, `<string.h>`, etc.)
