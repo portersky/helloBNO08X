@@ -36,7 +36,7 @@ target_include_directories(test_bno08x PRIVATE "${CMAKE_SOURCE_DIR}")
 target_link_libraries(test_bno08x PRIVATE bno08x Unity::Unity CMock::CMock)
 target_compile_features(test_bno08x PRIVATE c_std_23)
 target_compile_options(test_bno08x PRIVATE ${BASE_OPTIONS})
-cmock_generate_mock(test_bno08x "${CMAKE_SOURCE_DIR}/src/i2c_bus.h")
+cmock_generate_mock(test_bno08x "${CMAKE_SOURCE_DIR}/src/hal/i2c_bus.h")
 add_test(NAME test_bno08x COMMAND test_bno08x)
 list(APPEND TEST_TARGETS test_bno08x)
 

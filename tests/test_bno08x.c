@@ -1,7 +1,7 @@
 #include "unity.h"
 #include "Mocki2c_bus.h"
 
-#include "src/bno08x.h"
+#include "bno08x.h"
 
 void setUp(void)    { Mocki2c_bus_Init(); i2c_delay_ms_Ignore(); }
 void tearDown(void) { Mocki2c_bus_Verify(); Mocki2c_bus_Destroy(); }

@@ -24,23 +24,24 @@ if (CMAKE_CROSSCOMPILING)
 
   add_subdirectory(lib)
 
-  add_library(i2c_bus STATIC src/i2c_bus.c)
-  target_include_directories(i2c_bus PUBLIC "${PROJECT_SOURCE_DIR}/src")
+  add_library(i2c_bus STATIC src/hal/i2c_bus.c)
+  target_include_directories(i2c_bus PUBLIC "${PROJECT_SOURCE_DIR}/src/hal")
   target_link_libraries(i2c_bus PUBLIC hal)
 
-  add_library(bno08x STATIC src/bno08x.c)
-  target_include_directories(bno08x PUBLIC "${PROJECT_SOURCE_DIR}/src")
+  add_library(bno08x STATIC src/drivers/bno08x.c)
+  target_include_directories(bno08x PUBLIC "${PROJECT_SOURCE_DIR}/src/drivers")
   target_link_libraries(bno08x PUBLIC i2c_bus)
 
-  add_library(uart_log STATIC src/uart_log.c)
-  target_include_directories(uart_log PUBLIC "${PROJECT_SOURCE_DIR}/src")
+  add_library(uart_log STATIC src/hal/uart_log.c)
+  target_include_directories(uart_log PUBLIC "${PROJECT_SOURCE_DIR}/src/hal")
   target_link_libraries(uart_log PUBLIC hal)
 
   add_exec(fw
         "src/main.c"
-        "src/syscalls.c"
-        "src/sysmem.c"
-        INC ${PROJECT_SOURCE_DIR}/src
+        "src/sys/syscalls.c"
+        "src/sys/sysmem.c"
+        INC ${PROJECT_SOURCE_DIR}/src/hal
+            ${PROJECT_SOURCE_DIR}/src/drivers
         LIBS bno08x uart_log bsp hal cmsis
     )
 
@@ -86,8 +87,9 @@ else()
   include(Flags)
   include(Coverage)
 
-  add_library(bno08x STATIC src/bno08x.c)
-  target_include_directories(bno08x PUBLIC "${PROJECT_SOURCE_DIR}/src")
+  add_library(bno08x STATIC src/drivers/bno08x.c)
+  target_include_directories(bno08x PUBLIC "${PROJECT_SOURCE_DIR}/src/drivers")
+  target_include_directories(bno08x SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/src/hal")
   target_compile_features(bno08x PRIVATE c_std_23)
   target_compile_options(bno08x PRIVATE ${BASE_OPTIONS})
 
