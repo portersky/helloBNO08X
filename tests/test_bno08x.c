@@ -213,6 +213,76 @@ void test_read_rotation_vector_skips_timebase_ref(void) {
     TEST_ASSERT_FLOAT_WITHIN(0.001f, 1.0f,  rv.real);
 }
 
+void test_init_err_when_oversized_packet(void) {
+    uint8_t hdr[4] = { 0x00, 0x05, 0, 0 }; // pkt_len = 1280 > 512
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_OK);
+    i2c_read_IgnoreArg_buf();
+    i2c_read_ReturnArrayThruPtr_buf(hdr, 4);
+    TEST_ASSERT_EQUAL(BNO08X_ERR, bno08x_init());
+}
+
+void test_get_product_id_err_on_bad_packet_len(void) {
+    uint8_t hdr[4] = { 2, 0, 0, 0 }; // pkt_len = 2 < SHTP_HDR_LEN
+
+    i2c_write_ExpectAndReturn(BNO08X_ADDR, NULL, 6, I2C_OK);
+    i2c_write_IgnoreArg_buf();
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_OK);
+    i2c_read_IgnoreArg_buf();
+    i2c_read_ReturnArrayThruPtr_buf(hdr, 4);
+
+    bno08x_product_id_t id = {0};
+    TEST_ASSERT_EQUAL(BNO08X_ERR, bno08x_get_product_id(&id));
+}
+
+void test_read_rotation_vector_err_on_header_read_fail(void) {
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_ERR);
+    i2c_read_IgnoreArg_buf();
+
+    bno08x_rotation_vector_t rv = {0};
+    TEST_ASSERT_EQUAL(BNO08X_ERR, bno08x_read_rotation_vector(&rv));
+}
+
+void test_read_rotation_vector_err_on_bad_packet_len(void) {
+    uint8_t hdr[4] = { 2, 0, 0, 0 }; // pkt_len = 2 < SHTP_HDR_LEN
+
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_OK);
+    i2c_read_IgnoreArg_buf();
+    i2c_read_ReturnArrayThruPtr_buf(hdr, 4);
+
+    bno08x_rotation_vector_t rv = {0};
+    TEST_ASSERT_EQUAL(BNO08X_ERR, bno08x_read_rotation_vector(&rv));
+}
+
+void test_read_rotation_vector_err_on_body_read_fail(void) {
+    uint8_t hdr[4] = { 18, 0, 0, 0 };
+
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_OK);
+    i2c_read_IgnoreArg_buf();
+    i2c_read_ReturnArrayThruPtr_buf(hdr, 4);
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 18, I2C_ERR);
+    i2c_read_IgnoreArg_buf();
+
+    bno08x_rotation_vector_t rv = {0};
+    TEST_ASSERT_EQUAL(BNO08X_ERR, bno08x_read_rotation_vector(&rv));
+}
+
+void test_read_rotation_vector_err_on_unknown_report_id(void) {
+    uint8_t hdr[4] = { 10, 0, 0, 0 };
+    uint8_t pkt[10] = {0};
+    pkt[2] = 3;         // CHAN_REPORTS
+    pkt[4] = 0xFFu;     // unknown report ID, not RV or timebase ref
+
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 4, I2C_OK);
+    i2c_read_IgnoreArg_buf();
+    i2c_read_ReturnArrayThruPtr_buf(hdr, 4);
+    i2c_read_ExpectAndReturn(BNO08X_ADDR, NULL, 10, I2C_OK);
+    i2c_read_IgnoreArg_buf();
+    i2c_read_ReturnArrayThruPtr_buf(pkt, 10);
+
+    bno08x_rotation_vector_t rv = {0};
+    TEST_ASSERT_EQUAL(BNO08X_ERR, bno08x_read_rotation_vector(&rv));
+}
+
 void test_read_rotation_vector_err_on_wrong_channel(void) {
     uint8_t hdr[4] = { 18, 0, 0, 0 };
     uint8_t pkt[18] = {0};
@@ -246,5 +316,11 @@ int main(void) {
     RUN_TEST(test_read_rotation_vector_parses_report);
     RUN_TEST(test_read_rotation_vector_skips_timebase_ref);
     RUN_TEST(test_read_rotation_vector_err_on_wrong_channel);
+    RUN_TEST(test_init_err_when_oversized_packet);
+    RUN_TEST(test_get_product_id_err_on_bad_packet_len);
+    RUN_TEST(test_read_rotation_vector_err_on_header_read_fail);
+    RUN_TEST(test_read_rotation_vector_err_on_bad_packet_len);
+    RUN_TEST(test_read_rotation_vector_err_on_body_read_fail);
+    RUN_TEST(test_read_rotation_vector_err_on_unknown_report_id);
     return UNITY_END();
 }

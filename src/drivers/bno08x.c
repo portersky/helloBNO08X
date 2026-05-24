@@ -4,8 +4,8 @@
 #define SHTP_HDR_LEN        4u
 #define SHTP_LEN_MASK       0x7FFFu
 #define SHTP_ADVERT_MAX_LEN 512u  // advertisement is ~272 bytes; cap for sanity
-#define CHAN_CONTROL         2u
-#define CHAN_REPORTS         3u
+#define CHAN_CONTROL        2u
+#define CHAN_REPORTS        3u
 #define REP_PRODUCT_ID_REQ  0xF9u
 #define REP_PRODUCT_ID_RSP  0xF8u
 #define PRODUCT_ID_RSP_LEN  16u
