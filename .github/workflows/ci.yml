@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+    branches: [trunk]
+
+jobs:
+  macos:
+    name: macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: brew install ninja ruby
+
+      - name: Install gcovr
+        run: pip install gcovr
+
+      - name: Configure with coverage
+        run: cmake -S . -B build-cov -G Ninja -DENABLE_COVERAGE=ON
+
+      - name: Build and generate coverage
+        run: ninja -C build-cov coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-macos
+          path: build-cov/coverage/
+
+  windows-clang:
+    name: Windows / Clang
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install gcovr
+        run: pip install gcovr
+
+      - name: Configure with coverage
+        shell: bash
+        run: |
+          cmake -S . -B build-cov -G Ninja \
+            -DENABLE_COVERAGE=ON \
+            -DCMAKE_C_COMPILER="C:/Program Files/LLVM/bin/clang.exe" \
+            -DCMAKE_CXX_COMPILER="C:/Program Files/LLVM/bin/clang++.exe"
+
+      - name: Build and generate coverage
+        run: ninja -C build-cov coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-windows-clang
+          path: build-cov/coverage/
